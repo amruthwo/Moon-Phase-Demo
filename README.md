@@ -1,5 +1,5 @@
 # Moon Phase Demo - Classroom Model
-
+![Earth Moon and Sun](readme_hero.png)   
 A simple, interactive demonstration to help understand why the Moon phases appear as they do from earth.
 
 ** Feature **
