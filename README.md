@@ -2,7 +2,7 @@
 ![Earth Moon and Sun](readme_hero.png)   
 A simple, interactive demonstration to help understand why the Moon phases appear as they do from earth.
 
-** Feature **
+### Features:
 - Manually or Automatically control the Moon through its 29.53 day orbit (Press spacebar to play/pause)
 - Inset "Moon view" showing how the Moon appears from Earth
 - Controls to toggle side view or top view (Press T)
