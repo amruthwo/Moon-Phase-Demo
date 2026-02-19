@@ -494,37 +494,102 @@ const moonPos  = V3(orbitR, 0.0, 0.0);
     }
   };
 
-  const input = {dragging:false, mode:"orbit", px:0, py:0};
+  const input = {
+    pointers: new Map(), // pointerId -> {x,y}
+    pinchStartDist: 0,
+    pinchStartRadius: 0,
+    pinchStartTarget: null,
+dragging:false, mode:"orbit", px:0, py:0};
   elMain.addEventListener('contextmenu', (e)=>e.preventDefault());
   elMain.addEventListener('pointerdown', (e)=>{
+    e.preventDefault();
     elMain.setPointerCapture(e.pointerId);
+    input.pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
     input.dragging = true;
     input.px = e.clientX; input.py = e.clientY;
-    const panMode = (e.button === 2) || e.shiftKey;
-    input.mode = panMode ? "pan" : "orbit";
-  });
-  elMain.addEventListener('pointermove', (e)=>{
-    if(!input.dragging) return;
-    const dx = e.clientX - input.px;
-    const dy = e.clientY - input.py;
-    input.px = e.clientX; input.py = e.clientY;
 
-    const r = elMain.getBoundingClientRect();
-    const scale = 1 / Math.max(180, Math.min(900, r.width));
-    if(input.mode === "orbit"){
-      cam.theta += dx * (2.2*scale);
-      cam.phi   += dy * (2.2*scale);
-      cam.phi = clamp(cam.phi, 0.15, Math.PI-0.15);
+    const isTouch = (e.pointerType === 'touch');
+    const ptrCount = input.pointers.size;
+
+    if(isTouch && ptrCount >= 2){
+      // Two-finger gesture: pan + pinch zoom
+      const pts = Array.from(input.pointers.values());
+      const dx = pts[0].x - pts[1].x;
+      const dy = pts[0].y - pts[1].y;
+      input.pinchStartDist = Math.hypot(dx,dy);
+      input.pinchStartRadius = cam.radius;
+      input.pinchStartTarget = {...cam.target};
+      input.mode = "pinch";
     } else {
+      // Mouse: right button or shift = pan. Touch single finger = orbit.
+      const panMode = (!isTouch) && ((e.button === 2) || e.shiftKey);
+      input.mode = panMode ? "pan" : "orbit";
+    }
+  });
+elMain.addEventListener('pointermove', (e)=>{
+    if(!input.dragging) return;
+    if(!input.pointers.has(e.pointerId)) return;
+    // update stored pointer
+    input.pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+
+    const isTouch = (e.pointerType === 'touch');
+    const ptrCount = input.pointers.size;
+
+    if(isTouch && input.mode === "pinch" && ptrCount >= 2){
+      const pts = Array.from(input.pointers.values());
+      const cx = (pts[0].x + pts[1].x) * 0.5;
+      const cy = (pts[0].y + pts[1].y) * 0.5;
+      const dx = pts[0].x - pts[1].x;
+      const dy = pts[0].y - pts[1].y;
+      const dist = Math.max(10, Math.hypot(dx,dy));
+
+      // pinch zoom
+      const zoomFactor = input.pinchStartDist / dist;
+      cam.radius = clamp(input.pinchStartRadius * zoomFactor, cam.minR, cam.maxR);
+
+      // pan by centroid movement
+      const dcx = cx - input.px;
+      const dcy = cy - input.py;
+      input.px = cx; input.py = cy;
+
       const cp = camPosFromSpherical();
       const forward = v3_norm(v3_sub(cam.target, cp));
       const right = v3_norm(v3_cross(forward, camUp));
       const up = v3_norm(v3_cross(right, forward));
-      const panScale = cam.radius * 0.0014;
-      cam.target = v3_add(cam.target, v3_add(v3_mul(right, -dx*panScale), v3_mul(up, dy*panScale)));
+      const panScale = cam.radius * 0.0018;
+      cam.target = v3_add(cam.target, v3_add(v3_mul(right, -dcx*panScale), v3_mul(up, dcy*panScale)));
+      return;
+    }
+
+    // single-pointer orbit/pan
+    const dx1 = e.clientX - input.px;
+    const dy1 = e.clientY - input.py;
+    input.px = e.clientX; input.py = e.clientY;
+
+    const r = elMain.getBoundingClientRect();
+    const scale = 1 / Math.max(220, Math.min(900, r.width));
+    if(input.mode === "orbit"){
+      cam.theta += dx1 * (2.2*scale);
+      cam.phi   += dy1 * (2.2*scale);
+      cam.phi = clamp(cam.phi, 0.15, Math.PI-0.15);
+    } else if(input.mode === "pan"){
+      const cp = camPosFromSpherical();
+      const forward = v3_norm(v3_sub(cam.target, cp));
+      const right = v3_norm(v3_cross(forward, camUp));
+      const up = v3_norm(v3_cross(right, forward));
+      const panScale = cam.radius * 0.0016;
+      cam.target = v3_add(cam.target, v3_add(v3_mul(right, -dx1*panScale), v3_mul(up, dy1*panScale)));
     }
   });
-  elMain.addEventListener('pointerup', ()=>{ input.dragging = false; });
+elMain.addEventListener('pointerup', (e)=>{
+    input.pointers.delete(e.pointerId);
+    if(input.pointers.size === 0){
+      input.dragging = false;
+    }
+  });
+
+  elMain.addEventListener('pointercancel', (e)=>{ input.pointers.delete(e.pointerId); if(input.pointers.size===0) input.dragging=false; });
+
   elMain.addEventListener('wheel', (e)=>{
     e.preventDefault();
     const delta = Math.sign(e.deltaY);

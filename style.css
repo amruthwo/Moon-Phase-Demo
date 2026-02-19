@@ -117,3 +117,28 @@ canvas{display:block; width:100%; height:100%;}
               radial-gradient(circle at 55% 55%, rgba(80,220,140,.55), rgba(80,220,140,.0) 65%);
   box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset;
 }
+
+/* --- Mobile & touch improvements --- */
+html, body { height: 100%; }
+body { overscroll-behavior: none; }
+#main, #inset { touch-action: none; }
+canvas { -webkit-tap-highlight-color: transparent; }
+
+@media (max-width: 780px) {
+  #hud.card{
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    padding: 12px 12px;
+  }
+  .hudRow{ gap: 10px; }
+  .pill{ min-height: 48px; padding: 12px 14px; font-size: 15px; }
+  input[type="range"]{ height: 34px; }
+  #insetWrap.card{
+    left: 10px;
+    top: calc(10px + env(safe-area-inset-top));
+    width: min(46vw, 220px);
+  }
+  #inset{ height: 150px; }
+  .chip{ font-size: 12px; }
+}

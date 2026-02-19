@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Moon Phases — Portable Classroom Model (WebGL)</title>
 
-  <meta name="description" content="Interactive Moon phases classroom model (WebGL). Works offline as a PWA once installed." />
+  <meta name="description" content="Interactive Moon phases classroom model (WebGL). Installable PWA." />
   <meta name="theme-color" content="#0b1020" />
 
   <!-- PWA -->
@@ -38,20 +38,21 @@
           </div>
         </div>
         <div class="btnRow">
-          <button id="camBtn" class="pill secondary" type="button" aria-label="Toggle camera view">
-            <span class="camIcon"></span><span id="camTxt">Side</span>
-            <span class="kbd">T</span>
-          </button>
-          <button id="bodyBtn" class="pill secondary" type="button" aria-label="Toggle earth/person">
-            <span class="bodyIcon"></span><span id="bodyTxt">Earth</span>
-            <span class="kbd">P</span>
-          </button>
+  <button id="camBtn" class="pill secondary" type="button" aria-label="Toggle camera view">
+    <span class="camIcon"></span><span id="camTxt">Side</span>
+    <span class="kbd">T</span>
+  </button>
+  <button id="bodyBtn" class="pill secondary" type="button" aria-label="Toggle earth/person">
+    <span class="bodyIcon"></span><span id="bodyTxt">Earth</span>
+    <span class="kbd">P</span>
+  </button>
 
-          <button id="playBtn" class="pill" type="button" aria-label="Play or pause">
-            <span class="tri"></span><span id="playTxt">Play</span>
-            <span class="kbd">Space</span>
-          </button>
-        </div>
+  <button id="playBtn" class="pill" type="button" aria-label="Play or pause">
+          <span class="tri"></span><span id="playTxt">Play</span>
+          <span class="kbd">Space</span>
+        </button>
+      </div>
+
       </div><!-- /hudRow -->
 
       <div class="hudRow2">
@@ -67,15 +68,16 @@
   </div>
 
   <div id="err" class="err" hidden></div>
-
   <script src="./app.js"></script>
+
   <script>
-    // PWA: register service worker (requires HTTPS, or localhost)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    // PWA: register service worker (works on HTTPS / localhost)
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
       });
     }
   </script>
+
 </body>
 </html>
