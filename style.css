@@ -142,3 +142,66 @@ canvas { -webkit-tap-highlight-color: transparent; }
   #inset{ height: 150px; }
   .chip{ font-size: 12px; }
 }
+
+
+
+/* ===== Mobile-first responsive tightening ===== */
+
+/* Use scalable typography */
+.h1{ font-size: clamp(18px, 3.2vw, 28px); line-height: 1.12; }
+.h2{ font-size: clamp(11px, 2.2vw, 14px); }
+
+/* Phones: make the HUD a compact bottom sheet */
+@media (max-width: 520px){
+  #hud.card{
+    padding: 12px 12px 14px;
+    border-radius: 18px;
+  }
+  .hudRow{
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .title{
+    min-width: 0;
+    gap: 10px;
+  }
+  .titleText{ min-width: 0; }
+  .h2{ display: none; } /* keep UI readable on small portrait */
+  .btnRow{
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .pill{
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .kbd{ display: none; } /* save horizontal space */
+  .hudRow2{
+    margin-top: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .dayReadout{ font-size: 16px; }
+  .phaseReadout{ font-size: 18px; }
+
+  /* Reduce tick label density: keep only major phases (odd labels) */
+  .ticks .tickLbl:nth-of-type(even){ display: none; }
+  .ticks .tickLbl{ font-size: 12px; white-space: nowrap; }
+}
+
+/* Short-height landscape phones: keep controls from covering the scene */
+@media (max-height: 520px) and (orientation: landscape){
+  #hud.card{
+    padding: 10px 12px 12px;
+    border-radius: 18px;
+  }
+  .h2{ display:none; }
+  .sliderWrap{ margin-top: 8px; }
+  .ticks{ display:none; } /* slider only to reclaim vertical space */
+  #insetCard.card{
+    width: 200px;
+    height: 200px;
+  }
+}
