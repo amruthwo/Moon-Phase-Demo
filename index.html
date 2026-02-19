@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moon Phases — Portable Classroom Model (WebGL)</title>
+
+  <meta name="description" content="Interactive Moon phases classroom model (WebGL). Works offline as a PWA once installed." />
+  <meta name="theme-color" content="#0b1020" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon_192.png" sizes="192x192" />
+  <link rel="icon" href="./icons/icon_512.png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="./icons/icon_192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="main" aria-label="Main view"></canvas>
+
+    <div id="insetWrap" class="card" aria-label="Moon view inset">
+      <div class="chip">Moon view</div>
+      <div class="chip right" id="phaseChip">New Moon</div>
+      <canvas id="inset"></canvas>
+    </div>
+
+    <div id="hud" class="card">
+      <div class="hudRow">
+        <div class="title">
+          <div class="icon"></div>
+          <div class="titleText">
+            <div class="h1">Moon Phases — Classroom Model</div>
+            <div class="h2">Press T to toggle side and top view • Drag to orbit • Wheel to zoom • Right-drag / Shift-drag to pan</div>
+          </div>
+        </div>
+        <div class="btnRow">
+          <button id="camBtn" class="pill secondary" type="button" aria-label="Toggle camera view">
+            <span class="camIcon"></span><span id="camTxt">Side</span>
+            <span class="kbd">T</span>
+          </button>
+          <button id="bodyBtn" class="pill secondary" type="button" aria-label="Toggle earth/person">
+            <span class="bodyIcon"></span><span id="bodyTxt">Earth</span>
+            <span class="kbd">P</span>
+          </button>
+
+          <button id="playBtn" class="pill" type="button" aria-label="Play or pause">
+            <span class="tri"></span><span id="playTxt">Play</span>
+            <span class="kbd">Space</span>
+          </button>
+        </div>
+      </div><!-- /hudRow -->
+
+      <div class="hudRow2">
+        <div class="dayReadout"><span id="dayTxt">Day 0.0</span> / <span id="synTxt">29.53</span></div>
+        <div class="phaseReadout" id="phaseTxt">New Moon</div>
+      </div>
+
+      <div class="sliderWrap">
+        <input id="slider" type="range" min="0" max="29.53" step="0.01" value="0" />
+        <div id="ticks" class="ticks"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="err" class="err" hidden></div>
+
+  <script src="./app.js"></script>
+  <script>
+    // PWA: register service worker (requires HTTPS, or localhost)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
